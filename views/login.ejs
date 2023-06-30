@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<%- include('../views/head'); %>
+    <html lang="en">
+
+    <body>
+        <form action="/users/login" method="POST">
+            <!-- user name input -->
+            <div class="">
+                <input type="text" id="username" name="username" />
+                <label for="username">User name</label>
+            </div>
+
+            <!-- Password input -->
+            <div class="">
+                <input type="password" id="password" name="password" />
+                <label for="password">Password</label>
+            </div>
+
+            <!-- Submit button -->
+            <button type="submit" class="btn">Log in</button>
+            <a href="/users/register-page" class="btn"> Register</a>
+        </form>
+        <%- include('../views/scripts'); %>
+
+    </body>
+
+    </html>
