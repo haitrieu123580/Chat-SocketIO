@@ -1,5 +1,6 @@
 const userRoute = require('express').Router()
 const User = require('../models/User')
+const crypto = require('crypto')
 // LOGIN
 userRoute.post('/login', async (req, res) =>{
     const {username, password} = req.body;
