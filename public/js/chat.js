@@ -5,11 +5,15 @@ var messages = document.getElementById("messages");
   $("form").submit(function(e) {
     let li = document.createElement("li");
     e.preventDefault(); // prevents page reloading
-    socket.emit("chat-message", $("#message").val());
-
+    socket.emit("chat-message", {
+      msg: $("#message").val(),
+      // userId: $("#userId").val(),
+      sender: $("#username").text().trim()
+    });
+    // console.log($("#username").text())
     messages.appendChild(li).append($("#message").val());
     let span = document.createElement("span");
-    messages.appendChild(span).append("by " + "Anonymous" + ": " + "just now");
+    messages.appendChild(span).append("by " + $("#username").text().trim() + ": " + "just now");
 
     $("#message").val("");
 
@@ -21,7 +25,6 @@ var messages = document.getElementById("messages");
     let span = document.createElement("span");
     var messages = document.getElementById("messages");
     messages.appendChild(li).append(data.message);
-    messages.appendChild(span).append("by " + "anonymous" + ": " + "just now");
     console.log("Hello bingo!");
   });
 })();

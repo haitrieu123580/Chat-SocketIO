@@ -3,6 +3,7 @@ const Chat = require('./models/Chat')
 //Require the express moule
 const express = require('express');
 
+const bodyParser = require('body-parser');
 //create a new express application
 const app = express()
 
@@ -13,20 +14,14 @@ const http = require('http').Server(app)
 const io = require('socket.io');
 
 //bodyparser 
-const  chatRouter  = require("./route/chatRoute");
+
+const chatRouter = require("./route/chatRoute");
+const userRouter = require('./route/userRoute')
 
 //bodyparser middleware
-// express@4.16.0 the body-parser middleware is included in express
 app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-//routes
-app.use("/chats", chatRouter);
-//set the express.static middleware
-app.use(express.static(__dirname + "/public"));
-app.get('/', (req, res) =>{
-    return res.sendFile('index.html')
-})
-const port = process.env.PORT||3000;
 // connection to the mongodb 
 const mongoose = require("mongoose");
 mongoose
@@ -34,7 +29,23 @@ mongoose
     .then(() => console.log("DB Connection Successfull!"))
     .catch((err) => {
         console.log(err);
-    });
+    })
+    
+//routes
+app.use("/chats", chatRouter);
+app.use("/users", userRouter);
+//set the express.static middleware
+app.use(express.static(__dirname + "/public"));
+
+
+app.set('view engine', 'ejs');
+
+
+app.get('/', (req, res) => {
+   return res.render('login');
+  });
+
+const port = process.env.PORT||3000;
 
 
 const socket = io(http);
@@ -47,15 +58,15 @@ console.log('user connected');
         console.log("user disconnected!")
     })
     // listen chat event
-    socket.on('chat-message', async (msg) =>{
+    socket.on('chat-message', async ({msg,sender}) =>{
         console.log(`message: ${msg}`)
         //broadcast message to everyone in port:5000 except yourself.
-        socket.broadcast.emit("received", { message: msg  });
+        socket.broadcast.emit("received", { message: msg, sender:sender });
         // save msg to db
         try {
             await new Chat({
                 message: msg,
-                sender: 'Anonymous'
+                sender: sender
             }).save()
         } catch (error) {
             console.log(error)

@@ -27,10 +27,14 @@
     width: 100%;
     padding: 20px 0 15px;
     box-shadow: 0 1px 30px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
   .top_menu .buttons {
     margin: 3px 0 0 20px;
-    position: absolute;
+    /* position: absolute; */
+
   }
   .top_menu .buttons .button {
     width: 16px;
@@ -38,7 +42,8 @@
     border-radius: 50%;
     display: inline-block;
     margin-right: 10px;
-    position: relative;
+
+    /* position: relative; */
   }
   .top_menu .buttons .button.close {
     background-color: #f5886e;
@@ -180,7 +185,7 @@
     cursor: pointer;
     transition: all 0.2s linear;
     text-align: center;
-    float: right;
+    /* float: right; */
   }
   .bottom_wrapper .send_message:hover {
     color: #a3d063;
