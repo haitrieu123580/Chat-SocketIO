@@ -10,13 +10,11 @@ const app = express()
 //require the http module
 const http = require('http').Server(app)
 
-
-
 //bodyparser 
 
 const chatRouter = require("./route/chatRoute");
-const userRouter = require('./route/userRoute')
-
+const userRouter = require('./route/userRoute');
+const authRouter = require('./route/authRoute')
 //bodyparser middleware
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -32,7 +30,8 @@ mongoose
 
 //routes
 app.use("/chats", chatRouter);
-app.use("/users", userRouter);
+// app.use("/users", userRouter);
+app.use('/auth',authRouter);
 //set the express.static middleware
 app.use(express.static(__dirname + "/public"));
 
