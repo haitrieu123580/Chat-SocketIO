@@ -27,6 +27,16 @@ var messages = document.getElementById("messages");
     messages.appendChild(li).append(data.message);
     console.log("Hello bingo!");
   });
+  
+socket.emit('logined',$("#username").text().trim())
+var $users = $('#users')
+socket.on('get-users', (data) => {
+  var html = '';
+  for (i = 0; i < data.length; i++) {
+      html += `<li class = "list-group-item">${data[i]}</li>`
+  }
+  $users.html(html);
+});
 })();
 
 // fetching initial chat messages from the database
@@ -46,27 +56,3 @@ var messages = document.getElementById("messages");
       });
     });
 })();
-
-//is typing...
-
-let messageInput = document.getElementById("message");
-let typing = document.getElementById("typing");
-
-//isTyping event
-messageInput.addEventListener("keypress", () => {
-  socket.emit("typing", { user: "Someone", message: "is typing..." });
-});
-
-socket.on("notifyTyping", data => {
-  typing.innerText = data.user + " " + data.message;
-  console.log(data.user + data.message);
-});
-
-//stop typing
-messageInput.addEventListener("keyup", () => {
-  socket.emit("stopTyping", "");
-});
-
-socket.on("notifyStopTyping", () => {
-  typing.innerText = "";
-});
