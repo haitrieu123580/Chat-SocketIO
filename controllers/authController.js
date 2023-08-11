@@ -13,24 +13,26 @@ const Register = async (req, res) => {
             return res.status(404).send('User already existed');
         }
         //Hashing password and create new doc
-        const { salt, encryptedPassword } =  hash.hashedPassword(password);
-        const user = new User ({
+        const { salt, encryptedPassword } = hash.hashedPassword(password);
+        const user = new User({
             username: username,
             password: encryptedPassword,
             salt: salt
         });
         await user.save()
-        return res.status(200).json({message: 'New user created!'})
+        return res.redirect('/')
     } catch (error) {
         return res.status(500).send('Internal Server Error')
     }
 
 };
 const Login = async (req, res) => {
+    // create json web token
+    const maxAge = 3 * 24 * 60 * 60;
     const username = req.body.username;
     const password = req.body.password;
     try {
-        const user = await User.findOne( { username: username } )
+        const user = await User.findOne({ username: username })
         // Case 1: User does not exist
         if (!user) {
             return res.status(400).json({
@@ -46,18 +48,18 @@ const Login = async (req, res) => {
         if (isPasswordMatch) {
             // await cacheService.setOneUser(user.id);
             data = {
-                // id: user.id,
                 username: user.username,
-                // email: user.email,
             }
-            const jwt = jsonwebtoken.sign(data, process.env.JWT_SECRET, {
+            const token = jsonwebtoken.sign(data, process.env.JWT_SECRET, {
                 algorithm: 'HS256',
                 expiresIn: '1d',
             });
-            // Return jwt to user and render chat page
-            res.header('Authorization', 'Bearer ' + jwt);
-            // Redirect to the chat page
-            return res.render('chat',{user: user})
+            // Set the JWT cookie
+            res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
+            // console.log(res.cookie.jwt);
+            // Redirect the user to the /index page
+            return res.status(200).json({data:token})
+            // return res.redirect('/index')
 
         } else {
             return res.status(401).json({
@@ -65,6 +67,7 @@ const Login = async (req, res) => {
             });
         }
     } catch (error) {
+        console.log(error);
         return res.status(500).json({ message: 'Error' })
     }
 
