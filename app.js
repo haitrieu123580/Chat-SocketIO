@@ -1,22 +1,21 @@
 require('dotenv').config()
 const Chat = require('./models/Chat')
-//Require the express moule
 const express = require('express');
 
 const bodyParser = require('body-parser');
-//create a new express application
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
 const app = express()
-
+app.use(cookieParser());
 //require the http module
 const http = require('http').Server(app)
-
-
-
+const cors = require('cors')
+app.use(cors());
 //bodyparser 
 
 const chatRouter = require("./route/chatRoute");
-const userRouter = require('./route/userRoute')
-
+const indexRoute = require('./route/indexRoute');
+const authRouter = require('./route/authRoute')
 //bodyparser middleware
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -30,20 +29,30 @@ mongoose
         console.log(err);
     })
 
-//routes
-app.use("/chats", chatRouter);
-app.use("/users", userRouter);
+
 //set the express.static middleware
 app.use(express.static(__dirname + "/public"));
 
 
 app.set('view engine', 'ejs');
 
-
-app.get('/', (req, res) => {
+// app.use(session({
+//     secret: process.env.SESSION_SECRET,
+//     resave: false,
+//     saveUninitialized: false,
+//     cookie: {
+//         maxAge: 24 * 60 * 60 * 1000, 
+//         httpOnly: true, 
+//         secure: false, 
+//     },
+// }));
+app.get('/',(req, res) => {
     return res.render('login');
 });
-
+//routes
+app.use("/chats", chatRouter);
+app.use("/index", indexRoute);
+app.use('/auth',authRouter);
 const port = process.env.PORT || 3000;
 
 const io = require('socket.io')(http);
